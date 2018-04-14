@@ -31,6 +31,11 @@ public:
   ///* predicted sigma points matrix
   MatrixXd Xsig_pred_;
 
+  // R matrix for radar and laser
+  MatrixXd R_radar_;
+  MatrixXd R_lidar_;
+
+
   ///* time when the state is true, in us
   long long time_us_;
 
@@ -58,8 +63,8 @@ public:
   ///* Weights of sigma points
   VectorXd weights_;
 
-  ///* State dimension
-  int n_x_;
+  ///* State dimension, num of radar z, num of laser z
+  int n_x_, n_r_z_, n_l_z_;
 
   ///* Augmented state dimension
   int n_aug_;
@@ -67,6 +72,8 @@ public:
   ///* Sigma point spreading parameter
   double lambda_;
 
+  ///* sigmas count
+  int n_sigcnt_;// = ((2 * n_aug_) + 1);
 
   /**
    * Constructor
@@ -102,6 +109,13 @@ public:
    * @param meas_package The measurement at k+1
    */
   void UpdateRadar(MeasurementPackage meas_package);
+
+  void GenerateSigmaPoints(Eigen::VectorXd, Eigen::MatrixXd, Eigen::MatrixXd*);
+  void AugmentedSigmaPoints(Eigen::VectorXd, Eigen::MatrixXd, Eigen::MatrixXd*);
+  void SigmaPointPrediction(MatrixXd Xsig_a, double delta_t, MatrixXd* Xsig_out);
+  void PredictMeanAndCovariance(Eigen::MatrixXd, Eigen::VectorXd*, Eigen::MatrixXd*);
+  void GetRadarSigma(Eigen::MatrixXd*);
+  void GetLaserSigma(Eigen::MatrixXd*);
 };
 
 #endif /* UKF_H */
